@@ -1,0 +1,79 @@
+[
+  {
+    "target_name": "nrf52840dk",
+    "port": "nrf",
+    "board": "nrf52840dk",
+    "setup_cmd": "sudo apt-get update && sudo apt-get install -y ninja-build gcc-arm-none-eabi",
+    "build_cmd": "laze build --global -b nrf52840dk -a hello-world && find build/bin/nrf52840dk -path '*/out/memory.x' -exec cp {} memory.x \\; && mkdir -p build/bin/nrf52840dk/hello-world && cp build/bin/nrf52840dk/cargo/*/release/hello-world build/bin/nrf52840dk/hello-world/hello-world.elf",
+    "elf": "build/bin/nrf52840dk/hello-world/hello-world.elf",
+    "ld": "memory.x",
+    "map_file": "/tmp/membrowse-nrf52840dk-hello-world.map",
+    "linker_vars": ""
+  },
+  {
+    "target_name": "rpi-pico",
+    "port": "rp",
+    "board": "rpi-pico",
+    "setup_cmd": "sudo apt-get update && sudo apt-get install -y ninja-build gcc-arm-none-eabi",
+    "build_cmd": "laze build --global -b rpi-pico -a hello-world && find build/bin/rpi-pico -path '*/out/memory.x' -exec cp {} memory.x \\; && mkdir -p build/bin/rpi-pico/hello-world && cp build/bin/rpi-pico/cargo/*/release/hello-world build/bin/rpi-pico/hello-world/hello-world.elf",
+    "elf": "build/bin/rpi-pico/hello-world/hello-world.elf",
+    "ld": "memory.x",
+    "map_file": "/tmp/membrowse-rpi-pico-hello-world.map",
+    "linker_vars": ""
+  },
+  {
+    "target_name": "rpi-pico-w",
+    "port": "rp",
+    "board": "rpi-pico-w",
+    "setup_cmd": "sudo apt-get update && sudo apt-get install -y ninja-build gcc-arm-none-eabi",
+    "build_cmd": "laze build --global -b rpi-pico-w -a hello-world && find build/bin/rpi-pico-w -path '*/out/memory.x' -exec cp {} memory.x \\; && mkdir -p build/bin/rpi-pico-w/hello-world && cp build/bin/rpi-pico-w/cargo/*/release/hello-world build/bin/rpi-pico-w/hello-world/hello-world.elf",
+    "elf": "build/bin/rpi-pico-w/hello-world/hello-world.elf",
+    "ld": "memory.x",
+    "map_file": "/tmp/membrowse-rpi-pico-w-hello-world.map",
+    "linker_vars": ""
+  },
+  {
+    "target_name": "rpi-pico2",
+    "port": "rp",
+    "board": "rpi-pico2",
+    "setup_cmd": "sudo apt-get update && sudo apt-get install -y ninja-build gcc-arm-none-eabi",
+    "build_cmd": "laze build --global -b rpi-pico2 -a hello-world && find build/bin/rpi-pico2 -path '*/out/memory.x' -exec cp {} memory.x \\; && mkdir -p build/bin/rpi-pico2/hello-world && cp build/bin/rpi-pico2/cargo/*/release/hello-world build/bin/rpi-pico2/hello-world/hello-world.elf",
+    "elf": "build/bin/rpi-pico2/hello-world/hello-world.elf",
+    "ld": "memory.x",
+    "map_file": "/tmp/membrowse-rpi-pico2-hello-world.map",
+    "linker_vars": ""
+  },
+  {
+    "target_name": "espressif-esp32-c6-devkitc-1",
+    "port": "esp",
+    "board": "espressif-esp32-c6-devkitc-1",
+    "setup_cmd": "sudo apt-get update && sudo apt-get install -y ninja-build gcc-riscv64-unknown-elf",
+    "build_cmd": "laze build --global -b espressif-esp32-c6-devkitc-1 -a hello-world && mkdir -p ld-collect && find build/bin/espressif-esp32-c6-devkitc-1 -path '*/esp-hal-*/out/*.x' -exec cp {} ld-collect/ \\; && mkdir -p build/bin/espressif-esp32-c6-devkitc-1/hello-world && cp build/bin/espressif-esp32-c6-devkitc-1/cargo/*/release/hello-world build/bin/espressif-esp32-c6-devkitc-1/hello-world/hello-world.elf",
+    "elf": "build/bin/espressif-esp32-c6-devkitc-1/hello-world/hello-world.elf",
+    "ld": "",
+    "map_file": "/tmp/membrowse-espressif-esp32-c6-devkitc-1-hello-world.map",
+    "linker_vars": ""
+  },
+  {
+    "target_name": "st-nucleo-wb55",
+    "port": "stm32",
+    "board": "st-nucleo-wb55",
+    "setup_cmd": "sudo apt-get update && sudo apt-get install -y ninja-build gcc-arm-none-eabi",
+    "build_cmd": "laze build --global -b st-nucleo-wb55 -a hello-world && find build/bin/st-nucleo-wb55 -path '*/out/memory.x' -exec cp {} memory.x \\; && mkdir -p build/bin/st-nucleo-wb55/hello-world && cp build/bin/st-nucleo-wb55/cargo/*/release/hello-world build/bin/st-nucleo-wb55/hello-world/hello-world.elf",
+    "elf": "build/bin/st-nucleo-wb55/hello-world/hello-world.elf",
+    "ld": "memory.x",
+    "map_file": "/tmp/membrowse-st-nucleo-wb55-hello-world.map",
+    "linker_vars": ""
+  },
+  {
+    "target_name": "native",
+    "port": "native",
+    "board": "native",
+    "setup_cmd": "sudo apt-get update && sudo apt-get install -y ninja-build",
+    "build_cmd": "laze build --global -b native -a hello-world && mkdir -p build/bin/native/hello-world && cp build/bin/native/cargo/*/release/hello-world build/bin/native/hello-world/hello-world.elf",
+    "elf": "build/bin/native/hello-world/hello-world.elf",
+    "ld": "",
+    "map_file": "/tmp/membrowse-native-hello-world.map",
+    "linker_vars": ""
+  }
+]

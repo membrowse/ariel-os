@@ -1,0 +1,105 @@
+name: Onboard to Membrowse
+
+on:
+  workflow_dispatch:
+    inputs:
+      num_commits:
+        description: 'Number of commits to process'
+        required: true
+        default: '100'
+        type: string
+
+jobs:
+  load-targets:
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Load target matrix
+        id: set-matrix
+        run: echo "matrix=$(jq -c '.' .github/membrowse-targets.json)" >> $GITHUB_OUTPUT
+
+  onboard:
+    needs: load-targets
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.load-targets.outputs.matrix) }}
+
+    env:
+      CLANG_PATH: /usr/bin/clang-18
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Install packages
+        run: ${{ matrix.setup_cmd }}
+
+      - id: get_toolchain
+        run: echo "toolchain=$(scripts/rust-toolchain.sh)" >> $GITHUB_OUTPUT
+
+      - name: Install stable Rust toolchain
+        uses: dtolnay/rust-toolchain@1.91.1
+        with:
+          targets: riscv32imc-unknown-none-elf,riscv32imac-unknown-none-elf,thumbv6m-none-eabi,thumbv7m-none-eabi,thumbv7em-none-eabi,thumbv7em-none-eabihf,thumbv8m.main-none-eabi,thumbv8m.main-none-eabihf
+          components: rust-src, rustfmt
+
+      - name: Install nightly Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.get_toolchain.outputs.toolchain }}
+          targets: riscv32imc-unknown-none-elf,riscv32imac-unknown-none-elf,thumbv6m-none-eabi,thumbv7m-none-eabi,thumbv7em-none-eabi,thumbv7em-none-eabihf,thumbv8m.main-none-eabi,thumbv8m.main-none-eabihf
+          components: rust-src, rustfmt
+
+      - name: Install Xtensa toolchain
+        if: contains(matrix.target_name, 'esp32-s3') || contains(matrix.target_name, 'esp32-devkit')
+        uses: esp-rs/xtensa-toolchain@main
+        with:
+          version: "1.91.1.0"
+          buildtargets: esp32,esp32s2,esp32s3
+          override: false
+          export: false
+
+      - name: Install laze
+        uses: taiki-e/install-action@v2
+        with:
+          tool: laze@0.1
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: membrowse-${{ matrix.target_name }}
+
+      - name: Pre-build to resolve LD scripts
+        run: ${{ matrix.build_cmd }}
+
+      - name: Resolve LD scripts
+        id: resolve-ld
+        run: |
+          if [ -d ld-collect ] && ls ld-collect/*.x >/dev/null 2>&1; then
+            echo "ld=$(echo ld-collect/*.x)" >> $GITHUB_OUTPUT
+          else
+            echo "ld=${{ matrix.ld }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Membrowse Onboard Action
+        uses: membrowse/membrowse-action/onboard-action@v1
+        with:
+          target_name: ${{ matrix.target_name }}
+          num_commits: ${{ github.event.inputs.num_commits }}
+          build_script: ${{ matrix.build_cmd }}
+          elf: ${{ matrix.elf }}
+          ld: ${{ steps.resolve-ld.outputs.ld }}
+          map_file: ${{ matrix.map_file }}
+          linker_vars: ${{ matrix.linker_vars }}
+          skip_sections: .stack
+          api_key: ${{ secrets.MEMBROWSE_API_KEY }}
+          api_url: ${{ vars.MEMBROWSE_API_URL }}

@@ -523,6 +523,8 @@ contexts:
         # This is needed to keep the linkme sections on native also in combination
         # with gc-sections.
         - -Clink-arg=-Wl,-znostart-stop-gc
+        # Emit linker map file for MemBrowse archive/object-level attribution.
+        - -Clink-arg=-Wl,-Map=/tmp/membrowse-${builder}-${app}.map
       CARGO_TARGET_PREFIX: CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU
       CARGO_RUNNER: '"sh -c"'
 
@@ -808,6 +810,8 @@ modules:
           - -Clink-arg=-Teheap.x
           - -Clink-arg=-Tdevice.x
           - -Clink-arg=-Tisr_stack.x
+          # Emit linker map file for MemBrowse archive/object-level attribution.
+          - -Clink-arg=${LINK_ARG_PREFIX}-Map=/tmp/membrowse-${builder}-${app}.map
           - --cfg context=\"cortex-m\"
 
   - name: cortex-m0
@@ -897,6 +901,8 @@ modules:
           - --cfg context=\"xtensa\"
           - --cfg nightly
           - -Clink-arg=-Tisr_stack_xtensa.x
+          # Emit linker map file for MemBrowse archive/object-level attribution.
+          - -Clink-arg=${LINK_ARG_PREFIX}-Map=/tmp/membrowse-${builder}-${app}.map
         CFLAGS:
           - -mlongcalls
         CARGO_ARGS:
@@ -925,6 +931,8 @@ modules:
           - -Clink-arg=-Tisr_stack.x
           - -Clink-arg=-Tlinkme-region-alias.x
           - -Clink-arg=-Tlinkme.x
+          # Emit linker map file for MemBrowse archive/object-level attribution.
+          - -Clink-arg=${LINK_ARG_PREFIX}-Map=/tmp/membrowse-${builder}-${app}.map
 
   - name: rp-link-arg
     help: helper module that ensures link-rp.x is added behind cortex-m ld scripts
